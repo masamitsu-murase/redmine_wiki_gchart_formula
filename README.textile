@@ -34,6 +34,7 @@ h2. Tips
   If you are nervous about the privacy, you should use another plugin instead of this plugin.
 * You can use curly braces in formula, such as @{{latex(\sum_{k=1}^n k^2)}}@, because this plugin does not use @Redmine::WikiFormatting::Macros@ but has own processing method, @inline_wiki_gchart_formula@.
 If you would like to know more, please refer to "wiki_gchart_formula_patch.rb":https://github.com/masamitsu-murase/redmine_wiki_gchart_formula/blob/master/lib/wiki_gchart_formula_patch.rb.
+* @class@ attribute, "gchart_formula", is added to the image tag of formula.
 
 h2. License
 
@@ -45,4 +46,8 @@ h2. Change Logs
 h3. Version 0.0.1
 
 Initial commit.
+
+h3. Version 0.0.2
+
+Add "title" attribute to image tag of formula.
 

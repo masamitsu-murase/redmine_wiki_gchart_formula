@@ -24,12 +24,12 @@ require 'gchart_formula/gchart_formula'
 
 module WikiGchartFormulaPatch
   FORMULA_PATTERN = /\{\{latex\((.*?)\)\}\}/
+  IMAGE_TAG_CLASS_NAME = "gchart_formula"
 
   def self.included(base)
     base.send(:include, InstanceMethod)
 
     base.class_eval do
-      # 
       if (!const_defined?(:RULES))
         raise "Constant 'RULES' is not defined."
       end
@@ -46,7 +46,7 @@ module WikiGchartFormulaPatch
         match_data = $~
 
         formula_url = GoogleChart.formula(match_data[1]).to_url
-        tag("img", :src => formula_url, :alt => match_data[1], :class => "gchart_latex")
+        tag("img", :src => formula_url, :alt => match_data[1], :title => match_data[1], :class => IMAGE_TAG_CLASS_NAME)
       end
     end
   end
