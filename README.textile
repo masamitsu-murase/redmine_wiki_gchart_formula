@@ -1,0 +1,48 @@
+h1. wiki_gchart_formula (LaTeX-style formula plugin for Redmine)
+
+h2. Overview
+
+* This Redmine plugin enables Redmine to render LaTeX-style formula images in Wiki.
+* This plugin uses "Google Chart API":http://code.google.com/apis/chart/infographics/docs/formulas.html, so it works *without* any other software, such as @latex@ or @dvips@.
+* You *can* use curly braces in formula.
+
+h2. How to write in Redmine Wiki
+
+You can write formula in LaTeX style as follows:
+<pre>{{latex(formula)}}</pre>
+
+For example,
+<pre>{{latex(x=\frac{-b\pm\sqrt{b^2-4ac}}{2a})}}</pre>
+is shown as !https://chart.googleapis.com/chart?chf=bg%2Cs%2CFFFFFF00&cht=tx&chl=x%3D%5Cfr%7B-b%5Cpm%5Csq%7Bb%5E2-4ac%7D%7D%7B2a%7D&chco=000000!.
+
+@formula@ can include curly braces, '@{@' and '@}@'.
+
+If you need more information about formula, please refer to "Google Chart API":http://code.google.com/apis/chart/infographics/docs/formulas.html and "LaTeX commands":http://en.wikipedia.org/wiki/Help:Displaying_a_formula#Functions.2C_symbols.2C_special_characters.
+
+h2. Samples
+
+* @{{latex(\sum_{k=1}^n k^2)}}@ is shown as !https://chart.googleapis.com/chart?chf=bg%2Cs%2CFFFFFF00&cht=tx&chl=%5Csum_%7Bk%3D1%7D%5En+k%5E2&chco=000000!.
+* @{{latex(\displaystyle\sum_{k=1}^n k^2)}}@ is shown as !https://chart.googleapis.com/chart?chf=bg%2Cs%2CFFFFFF00&cht=tx&chl=%5Cdisplayst%5Csum_%7Bk%3D1%7D%5En+k%5E2&chco=000000!.
+* @{{latex(\displaystyle\sum_{k=1}^n k^3 = \left(\frac{1}{2}n(n+1)\right)^2)}}@ is shown as !https://chart.googleapis.com/chart?chf=bg%2Cs%2CFFFFFF00&cht=tx&chl=%5Cdisplayst%5Csum_%7Bk%3D1%7D%5En+k%5E3+%3D+%5Clef%28%5Cfr%7B1%7D%7B2%7Dn%28n%2B1%29%5Cright%29%5E2&chco=000000!.
+
+h2. Tips
+
+* This plugin regards the sequence '@)}}@' as an end of the LaTeX formula, so you should write '@) }}@' instead of '@)}}@' to output '@)}}@'.
+* Too long formula cannot be shown, because of Google Chart API restriction.
+  If you need to output long formula, you should consider using another plugin, such as "redmine-wiki_latex_plugin":https://github.com/nisrael/redmine-wiki_latex_plugin.
+* This plugin uses Google Chart API, so the formula you input is sent to Google.
+  If you are nervous about the privacy, you should use another plugin instead of this plugin.
+* You can use curly braces in formula, such as @{{latex(\sum_{k=1}^n k^2)}}@, because this plugin does not use @Redmine::WikiFormatting::Macros@ but has own processing method, @inline_wiki_gchart_formula@.
+If you would like to know more, please refer to "wiki_gchart_formula_patch.rb":https://github.com/masamitsu-murase/redmine_wiki_gchart_formula/blob/master/lib/wiki_gchart_formula_patch.rb.
+
+h2. License
+
+You can use this plugin under the "MIT License":http://www.opensource.org/licenses/mit-license.php.
+This plugin uses Google Chart API, so you have to obey "Terms of Service":http://code.google.com/intl/en/apis/chart/image/terms.html of Google Chart Tools.
+
+h2. Change Logs
+
+h3. Version 0.0.1
+
+Initial commit.
+
