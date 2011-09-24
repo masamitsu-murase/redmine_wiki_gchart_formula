@@ -280,7 +280,7 @@ module GoogleChart
     end
 
     def abbreviate(formula)
-      return formula.gsub(Regexp.new(Regexp.escape('\\') + "[a-zA-Z]+")) do |matched|
+      return formula.gsub(Regexp.new("\\s+"), " ").gsub(Regexp.new(Regexp.escape('\\') + "[a-zA-Z]+")) do |matched|
         abbr = SHORT_EXPR[matched[1, matched.size]]
         next (abbr ? ('\\' + abbr) : matched)
       end
