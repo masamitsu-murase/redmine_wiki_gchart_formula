@@ -24,6 +24,21 @@ require 'gchart_formula/gchart_formula'
 
 module WikiGchartFormulaPatch
   FORMULA_PATTERN = /\{\{latex\((.*?)\)\}\}/
+  OPTIONAL_ARG_PATTERN = /,\s*\(([^\(\)]+)\)$/
+  bg_option = {
+    :name => :background_color,
+    :converter => :to_s.to_proc
+  }
+  OPTIONAL_ARGS = {
+    "opacity" => {
+      :name => :opacity,
+      :converter => :to_i.to_proc
+    },
+    "background_color" => bg_option,
+    "bg_color" => bg_option,
+    "bg" => bg_option
+  }
+
   IMAGE_TAG_CLASS_NAME = "gchart_formula"
 
   def self.included(base)
@@ -45,9 +60,32 @@ module WikiGchartFormulaPatch
       text.gsub!(FORMULA_PATTERN) do
         match_data = $~
 
-        formula_url = GoogleChart.formula(match_data[1]).to_url
-        tag("img", :src => formula_url, :alt => match_data[1], :title => match_data[1], :class => IMAGE_TAG_CLASS_NAME)
+        data = parse_pattern(match_data[1])
+        formula_url = GoogleChart.formula(data[:formula], data[:option] || {}).to_url
+        next tag("img", :src => formula_url, :alt => data[:formula],
+                 :title => data[:formula], :class => IMAGE_TAG_CLASS_NAME)
       end
+    end
+
+    def parse_pattern(text)
+      match_data = text.match(OPTIONAL_ARG_PATTERN)
+      if (match_data)
+        optional_args = match_data[1].split(",").map{ |i| i.split("=", 2).map(&:strip) }
+        if (optional_args.map(&:first).all?{ |i| OPTIONAL_ARGS.key?(i) })
+          option = {}
+          optional_args.each do |arg|
+            info = OPTIONAL_ARGS[arg[0]]
+            option[info[:name]] = info[:converter].call(arg[1])
+          end
+
+          return {
+            :formula => match_data.pre_match,
+            :option => option
+          }
+        end
+      end
+
+      return { :formula => text }
     end
   end
 end
