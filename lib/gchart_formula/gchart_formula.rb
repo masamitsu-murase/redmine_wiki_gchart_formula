@@ -244,7 +244,7 @@ module GoogleChart
     end
 
     def to_url
-      return "https://chart.googleapis.com/chart?" + query_params(@formula_raw, @params)
+      return "https://chart.googleapis.com/chart?" + query_params(@formula_raw, @params)  # "
     end
 
     def fetch
@@ -280,10 +280,16 @@ module GoogleChart
     end
 
     def abbreviate(formula)
-      return formula.gsub(Regexp.new("\\s+"), " ").gsub(Regexp.new(Regexp.escape('\\') + "[a-zA-Z]+")) do |matched|
-        abbr = SHORT_EXPR[matched[1, matched.size]]
+      # 1. remove multiple spaces
+      formula = formula.gsub(Regexp.new("\\s+"), " ")
+
+      # 2. use short expression
+      formula = formula.gsub(Regexp.new(Regexp.escape('\\') + "([a-zA-Z]+)")) do |matched|
+        abbr = SHORT_EXPR[$1]
         next (abbr ? ('\\' + abbr) : matched)
       end
+
+      return formula
     end
 
     def query_params(formula, params)
