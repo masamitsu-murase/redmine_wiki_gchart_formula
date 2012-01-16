@@ -23,7 +23,7 @@
 require 'gchart_formula/gchart_formula'
 
 module WikiGchartFormulaPatch
-  FORMULA_PATTERN = /\{\{latex\((.*?)\)\}\}/
+  FORMULA_PATTERN = /(!)?\{\{latex\((.*?)\)\}\}/
   OPTIONAL_ARG_PATTERN = /,\s*\(([^\(\)]+)\)$/
   bg_option = {
     :name => :background_color,
@@ -60,7 +60,9 @@ module WikiGchartFormulaPatch
       text.gsub!(FORMULA_PATTERN) do
         match_data = $~
 
-        data = parse_pattern(match_data[1])
+        next match_data[0] if (match_data[1])
+
+        data = parse_pattern(match_data[2].gsub("x%x%", "&"))
         formula_url = GoogleChart.formula(data[:formula], data[:option] || {}).to_url
         next tag("img", :src => formula_url, :alt => data[:formula],
                  :title => data[:formula], :class => IMAGE_TAG_CLASS_NAME)
