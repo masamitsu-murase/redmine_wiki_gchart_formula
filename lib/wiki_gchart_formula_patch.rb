@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require_dependency 'application_helper'
 require 'gchart_formula/gchart_formula'
 
 module WikiGchartFormulaPatch
@@ -45,31 +46,31 @@ module WikiGchartFormulaPatch
     base.send(:include, InstanceMethod)
 
     base.class_eval do
-      if (!const_defined?(:RULES))
-        raise "Constant 'RULES' is not defined."
-      end
-
-      rules_base = const_get(:RULES)
-      remove_const(:RULES)
-      const_set(:RULES, rules_base + [ :inline_wiki_gchart_formula ])
+      alias_method_chain :parse_macros, :gchart_formula
     end
   end
 
   module InstanceMethod
+    def parse_macros_with_gchart_formula(text, project, obj, attr, only_path, options)
+      inline_wiki_gchart_formula(text)
+      parse_macros_without_gchart_formula(text, project, obj, attr, only_path, options)
+    end
+
     def inline_wiki_gchart_formula(text)
       text.gsub!(FORMULA_PATTERN) do
         match_data = $~
 
+        # '!' is an escape character.
         next match_data[0] if (match_data[1])
 
-        data = parse_pattern(match_data[2].gsub("x%x%", "&"))
+        data = parse_wiki_gchart_pattern(match_data[2])
         formula_url = GoogleChart.formula(data[:formula], data[:option] || {}).to_url
         next tag("img", :src => formula_url, :alt => data[:formula],
                  :title => data[:formula], :class => IMAGE_TAG_CLASS_NAME)
       end
     end
 
-    def parse_pattern(text)
+    def parse_wiki_gchart_pattern(text)
       match_data = text.match(OPTIONAL_ARG_PATTERN)
       if (match_data)
         optional_args = match_data[1].split(",").map{ |i| i.split("=", 2).map(&:strip) }
@@ -92,5 +93,5 @@ module WikiGchartFormulaPatch
   end
 end
 
-Redmine::WikiFormatting::Textile::Formatter.send(:include, WikiGchartFormulaPatch)
+ApplicationHelper.send(:include, WikiGchartFormulaPatch)
 
