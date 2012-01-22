@@ -24,7 +24,7 @@ require_dependency 'application_helper'
 require 'gchart_formula/gchart_formula'
 
 module WikiGchartFormulaPatch
-  FORMULA_PATTERN = /(!)?\{\{latex\((.*?)\)\}\}/
+  FORMULA_PATTERN = /(!)?(\{\{latex\((.*?)\)\}\})/
   OPTIONAL_ARG_PATTERN = /,\s*\(([^\(\)]+)\)$/
   bg_option = {
     :name => :background_color,
@@ -46,7 +46,13 @@ module WikiGchartFormulaPatch
     base.send(:include, InstanceMethod)
 
     base.class_eval do
-      alias_method_chain :parse_macros, :gchart_formula
+      if (method_defined?(:parse_macros))
+        # for Redmine 1.3.0
+        alias_method_chain :parse_macros, :gchart_formula
+      elsif (method_defined?(:parse_inline_attachments))
+        # for Redmine 1.2.X
+        alias_method_chain :parse_inline_attachments, :gchart_formula
+      end
     end
   end
 
@@ -56,14 +62,19 @@ module WikiGchartFormulaPatch
       parse_macros_without_gchart_formula(text, project, obj, attr, only_path, options)
     end
 
+    def parse_inline_attachments_with_gchart_formula(text, project, obj, attr, only_path, options)
+      inline_wiki_gchart_formula(text)
+      parse_inline_attachments_without_gchart_formula(text, project, obj, attr, only_path, options)
+    end
+
     def inline_wiki_gchart_formula(text)
       text.gsub!(FORMULA_PATTERN) do
         match_data = $~
 
         # '!' is an escape character.
-        next match_data[0] if (match_data[1])
+        next match_data[2] if (match_data[1])
 
-        data = parse_wiki_gchart_pattern(match_data[2])
+        data = parse_wiki_gchart_pattern(match_data[3])
         formula_url = GoogleChart.formula(data[:formula], data[:option] || {}).to_url
         next tag("img", :src => formula_url, :alt => data[:formula],
                  :title => data[:formula], :class => IMAGE_TAG_CLASS_NAME)
