@@ -1,0 +1,22 @@
+
+h1. Formula {{latex(m = \frac{m_0}{\sqrt{1-\frac{v^2}{c^2}}})}} in header
+
+* Formula {{latex(E = mc^2)}} in unordered list
+
+# Formula {{latex(\displaystyle \frac{a}{\sin A}=\frac{b}{\sin B}=\frac{c}{\sin C}=2R)}} in ordered list
+
+"pre" test:
+<pre>{{latex(a^2 = b^2 + c^2 - 2bc\cos\alpha)}}</pre>
+{{latex(a^2 = b^2 + c^2 - 2bc\cos\alpha)}}
+
+escape test:
+!{{latex(\displaystyle\frac{-b\pm\sqrt{b^2-4ac}}{2a})}}
+
+ampersand test:
+{{latex(\displaystyle A=\begin{bmatrix} \cos\theta & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{bmatrix})}}
+
+quot test:
+{{latex(\displaystyle "A"=\left(\begin{matrix} \cos\theta & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{matrix}\right))}}
+
+other macro:
+{{hello_world(arg1, arg2&arg3)}}
