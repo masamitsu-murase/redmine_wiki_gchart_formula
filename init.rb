@@ -25,7 +25,7 @@ Redmine::Plugin.register :redmine_wiki_gchart_formula do
   name 'Redmine Wiki Gchart LaTeX-style Formula plugin'
   author 'Masamitsu MURASE'
   description 'This plugin enables Redmine to render LaTeX-style formula images in Wiki.'
-  version '0.0.2'
+  version '0.0.3'
   url 'https://github.com/masamitsu-murase/redmine_wiki_gchart_formula/'
   author_url 'http://masamitsu-murase.blogspot.com/'
 end

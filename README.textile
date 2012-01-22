@@ -21,9 +21,10 @@ If you need more information about formula, please refer to "Google Chart API":h
 
 h2. Samples
 
-* @{{latex(\sum_{k=1}^n k^2)}}@ is shown as !https://chart.googleapis.com/chart?chf=bg%2Cs%2CFFFFFF00&cht=tx&chl=%5Csum_%7Bk%3D1%7D%5En+k%5E2&chco=000000!.
+* @{{latex(\textstyle\sum_{k=1}^n k^2)}}@ is shown as !https://chart.googleapis.com/chart?chf=bg%2Cs%2CFFFFFF00&cht=tx&chl=%5Ctextstyle%5Csum_%7Bk%3D1%7D%5En+k%5E2&chco=000000!.
 * @{{latex(\displaystyle\sum_{k=1}^n k^2)}}@ is shown as !https://chart.googleapis.com/chart?chf=bg%2Cs%2CFFFFFF00&cht=tx&chl=%5Cdisplayst%5Csum_%7Bk%3D1%7D%5En+k%5E2&chco=000000!.
 * @{{latex(\displaystyle\sum_{k=1}^n k^3 = \left(\frac{1}{2}n(n+1)\right)^2)}}@ is shown as !https://chart.googleapis.com/chart?chf=bg%2Cs%2CFFFFFF00&cht=tx&chl=%5Cdisplayst%5Csum_%7Bk%3D1%7D%5En+k%5E3+%3D+%5Clef%28%5Cfr%7B1%7D%7B2%7Dn%28n%2B1%29%5Cright%29%5E2&chco=000000!.
+* @{{latex(\displaystyle A=\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{bmatrix})}}@ is shown as !https://chart.googleapis.com/chart?chf=bg%2Cs%2CFFFFFF00&cht=tx&chl=%5Cdisplayst+A%3D%5Cbegin%7Bbmatrix%7D+1+%26%2338%3B+2+%26%2338%3B+3+%5C%5C+4+%26%2338%3B+5+%26%2338%3B+6+%5C%5C+7+%26%2338%3B+8+%26%2338%3B+9+%5Cend%7Bbmatrix%7D&chco=000000!.
 
 h2. Tips
 
@@ -51,3 +52,7 @@ h3. Version 0.0.2
 
 Add "title" attribute to image tag of formula.
 
+h3. Version 0.0.3
+
+Bug fix about 'ampersand' error.
+Thank you for your report, Yoav HaCohen!
