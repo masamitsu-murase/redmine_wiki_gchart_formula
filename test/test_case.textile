@@ -1,5 +1,7 @@
 
-h1. Formula {{latex(m = \frac{m_0}{\sqrt{1-\frac{v^2}{c^2}}})}} in header
+h1. You should test this page in issue comment and Wiki page.
+
+h2. Formula {{latex(m = \frac{m_0}{\sqrt{1-\frac{v^2}{c^2}}})}} in header
 
 * Formula {{latex(E = mc^2)}} in unordered list
 
