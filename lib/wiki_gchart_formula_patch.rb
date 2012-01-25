@@ -53,6 +53,9 @@ module WikiGchartFormulaPatch
         # for Redmine 1.2.X
         alias_method_chain :parse_inline_attachments, :gchart_formula
       end
+
+      alias_method :inline_wiki_gchart_formula, :def_inline_wiki_gchart_formula
+      alias_method :parse_wiki_gchart_pattern, :def_parse_wiki_gchart_pattern
     end
   end
 
@@ -67,7 +70,7 @@ module WikiGchartFormulaPatch
       parse_inline_attachments_without_gchart_formula(text, project, obj, attr, only_path, options)
     end
 
-    def inline_wiki_gchart_formula(text)
+    def def_inline_wiki_gchart_formula(text)
       text.gsub!(FORMULA_PATTERN) do
         match_data = $~
 
@@ -81,7 +84,7 @@ module WikiGchartFormulaPatch
       end
     end
 
-    def parse_wiki_gchart_pattern(text)
+    def def_parse_wiki_gchart_pattern(text)
       match_data = text.match(OPTIONAL_ARG_PATTERN)
       if (match_data)
         optional_args = match_data[1].split(",").map{ |i| i.split("=", 2).map(&:strip) }
