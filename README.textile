@@ -61,3 +61,8 @@ h3. Version 0.0.4
 
 Support Redmine 1.2.X.
 
+h3. Version 0.0.5
+
+Bug fix about conflicts with some plugins.
+Thank you for your report, Ryan Edwards!
+
