@@ -41,6 +41,7 @@ module WikiGchartFormula
 
     def initialize(data)
       @temp_png_files = {}
+      data ||= []
       data.each do |item|
         key = item[:key]
         png_data = item[:png].unpack("m")[0]
@@ -70,8 +71,9 @@ module WikiGchartFormula
 
     private
     def chl(url)
-      info = WikiGchartFormula::WikiGchartFormulaMacro.parse_wiki_gchart_url(url)
-      return info ? info[:params][:chl] : nil
+      pat = /(\?|&)chl=([^&]+)/
+      match_data = url.match(pat)
+      return match_data ? match_data[2] : nil
     end
   end
 end
@@ -359,15 +361,28 @@ end
 
 module WikiGchartFormula
   class IssueListener < Redmine::Hook::ViewListener
+    PDF_FORM_ID = "wiki_gchart_formula_pdf_form"
+
     def view_layouts_base_html_head(context)
       if (context[:controller].controller_name == "issues" && context[:controller].action_name == "show")
         config = <<"EOS"
 var gWikiGchartFormula = {
-  img_class: '#{escape_javascript(WikiGchartFormulaMacro::IMAGE_TAG_CLASS_NAME)}'
+  img_class: '#{escape_javascript(WikiGchartFormulaMacro::IMAGE_TAG_CLASS_NAME)}',
+  pdf_form_id: '#{escape_javascript(PDF_FORM_ID)}'
 };
 EOS
         return javascript_tag(config) +
           javascript_include_tag('wiki_gchart_formula.js', :plugin => "redmine_wiki_gchart_formula")
+      end
+      return ""
+    end
+
+    def view_layouts_base_body_bottom(context)
+      if (context[:controller].controller_name == "issues" && context[:controller].action_name == "show")
+        return context[:controller].send(:render_to_string, {
+                                           :partial => "wiki_gchart_formula/issue_pdf_form",
+                                           :locals => { :issue_id => context[:controller].params[:id] }
+                                         })
       end
       return ""
     end

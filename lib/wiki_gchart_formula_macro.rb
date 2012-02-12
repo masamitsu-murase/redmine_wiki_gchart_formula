@@ -79,21 +79,6 @@ module WikiGchartFormula
 
         return { :formula => text }
       end
-
-      def parse_wiki_gchart_url(url)
-        match_data = url.match(/^([^?#]+)\?(.*)$/)
-        url_without_param = match_data[1]
-        params = CGI.parse(match_data[2])
-        hash = {}
-        params.each do |key, value|
-          hash[key.to_sym] = value.first
-        end
-
-        return {
-          :url_without_param => url_without_param,
-          :params => hash
-        }
-      end
     end
   end
 end

@@ -1,9 +1,8 @@
 
 (function(){
-    // base64 encoder
+    // base64 encoder (cheap implementation :-P)
+    var BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     var encodeBase64 = function(data){
-        var BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
         return data.inGroupsOf(3).map(function(item){
             var str = BASE64[item[0] >> 2];
             var num = (item[0] << 4) & 0x3F;
@@ -26,7 +25,7 @@
         }).join("");
     };
 
-    // load binary
+    // load binary data
     var checkSuccess = function(status){
         return (!status || (200 <= status && status < 300) || status == 304 || status == 1223);
     };
@@ -52,25 +51,8 @@
         req.send(null);
     };
 
-    var loadBinaryDataSync = function(url){
-        var req = new XMLHttpRequest();
-        req.open("GET", url, false);
-        req.overrideMimeType("text/plain; charset=x-user-defined");
-        req.send(null);
-
-        var status = req.status;
-        if (!checkSuccess(status)){
-            return null;
-        }
-        return convertResponseText(req.responseText);
-    };
-
     var loadBinaryData = function(url, callback){
-        if (callback){
-            loadBinaryDataAsync(url, callback);
-        }else{
-            return loadBinaryDataSync(url);
-        }
+        loadBinaryDataAsync(url, callback);
     };
 
     var loadGChartData = function(formula, callback){
@@ -78,33 +60,31 @@
         return loadBinaryData(GCHART_URL + "?" + formula, callback);
     };
 
-    var parseUrl = function(url){
-        var url_without_params = url.match(/^[^?#]+/)[0];
-        var params = url.toQueryParams();
-        return {
-            url_without_params: url_without_params,
-            params: params,
-            raw_url: url
-        };
-    };
-
     var convertGChartUrlForPDF = function(url){
-        var info = parseUrl(url);
         // RMagick does not support transparent PNG,
         // so change background color to white.
-        info.params.chf = "bg,s,FFFFFF";
-        return info.url_without_params + "?" + Object.toQueryString(info.params);
+        var url_for_pdf = url.replace(/chf=[^&]+/, "chf=bg%2Cs%2CFFFFFF");
+        return url_for_pdf;
     };
 
-    var loadAllGChartData = function(){
-        var hash = {};
-        $$("img." + gWikiGchartFormula.img_class).each(function(img){
-            var info = parseUrl(img.src);
-            var url = convertGChartUrlForPDF(info.raw_url);
-            var data = loadBinaryData(url);
-            hash[info.params.chl] = encodeBase64(data);
-        });
-        return hash;
+    var loadAllGChartData = function(callback){
+        var func = function(images, hash){
+            if (images.size() == 0){
+                callback(hash);
+                return;
+            }
+
+            var img = images.shift();
+            var raw_url = img.src;
+            var url = convertGChartUrlForPDF(raw_url);
+            var formula = raw_url.match(/(\?|&)chl=([^&]+)/)[2];
+            loadBinaryData(url, function(data){
+                hash[formula] = encodeBase64(data);
+                func(images, hash);
+            });
+        };
+
+        func($$("img." + gWikiGchartFormula.img_class), {});
     };
 
     var createHiddenInput = function(name, value){
@@ -115,33 +95,38 @@
         return hidden;
     };
 
-    var getPDF = function(event, data){
-        var f = document.createElement('form');
-        f.style.display = 'none';
-        event.originalTarget.parentNode.appendChild(f);
-        f.method = 'POST';  // This should be GET, but some browsers do not support to send large data via GET.
-        f.action = event.originalTarget.href;
-
-        var token = $$("meta[name='csrf-token']")[0].readAttribute("content")
-        var hidden = createHiddenInput("authenticity_token", token);
-        f.appendChild(hidden);
-
-        for (var key in data){
-            hidden = createHiddenInput("gchart[][key]", key);
-            f.appendChild(hidden);
-            hidden = createHiddenInput("gchart[][png]", data[key]);
-            f.appendChild(hidden);
-        }
-        f.submit();
-    };
-
     var load = function(){
-        var hash = loadAllGChartData();
-        $("gchart_pdf").observe("click", function(event){
-            getPDF(event, hash);
-            event.preventDefault();
-            return false;
-        });
+        try{
+            var form = $(gWikiGchartFormula.pdf_form_id);
+            if (form){
+                loadAllGChartData(function(hash){
+                    for (var key in hash){
+                        var hidden = createHiddenInput("gchart[][key]", key);
+                        form.appendChild(hidden);
+                        hidden = createHiddenInput("gchart[][png]", hash[key]);
+                        form.appendChild(hidden);
+                    }
+
+                    var elem = $$("div#content p.other-formats")[0];
+                    if (elem){
+                        var span = document.createElement("span");
+                        elem.appendChild(span);
+
+                        var a = document.createElement("a");
+                        a.setAttribute("href", "#");
+                        a.innerHTML = "PDF (w/ Formula)";
+                        a.observe("click", function(event){
+                            form.submit();
+                            event.preventDefault();
+                            return false;
+                        });
+                        a.setAttribute("class", "wiki_gchart_formula_pdf");
+                        span.appendChild(a);
+                    }
+                });
+            }
+        }catch(e){
+        }
     };
 
     if (typeof(Prototype) !== "undefined" && typeof(gWikiGchartFormula) !== "undefined"){
