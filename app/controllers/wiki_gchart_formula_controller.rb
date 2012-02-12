@@ -5,7 +5,12 @@ class WikiGchartFormulaController < ApplicationController
 
   def show
     if (WikiGchartFormula.support_pdf?)
-      issue = Issue.find(params[:id])
+      issue = Issue.find(params[:id], :include => [:project, :tracker, :status, :author, :priority, :category])
+      if (!(issue.visible?) || !(User.current.allowed_to?({ :controller => "issues", :action => "edit"}, issue.project, :global => false)))
+        deny_access
+        return
+      end
+
 
       gchart = params[:gchart]
       WikiGchartFormula::WikiGchartFormulaTempPngManager.create_temp_png_files(gchart) do |mgr|
