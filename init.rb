@@ -18,15 +18,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'redmine'
-require 'wiki_gchart_formula_patch'
+plugin_name = :redmine_wiki_gchart_formula
 
-Redmine::Plugin.register :redmine_wiki_gchart_formula do
+Rails.configuration.to_prepare do
+  require_dependency 'google_chart/formula'
+  require_patch plugin_name, %w'application_helper'
+end
+
+Redmine::Plugin.register plugin_name do
   name 'Redmine Wiki Gchart LaTeX-style Formula plugin'
   author 'Masamitsu MURASE'
   description 'This plugin enables Redmine to render LaTeX-style formula images in Wiki.'
-  version '0.0.5'
+  version '0.0.6'
   url 'https://github.com/masamitsu-murase/redmine_wiki_gchart_formula/'
   author_url 'http://masamitsu-murase.blogspot.com/'
+  requires_redmine version_or_higher: '3.3.0'
 end
 
