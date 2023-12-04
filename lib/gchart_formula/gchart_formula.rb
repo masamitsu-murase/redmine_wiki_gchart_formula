@@ -23,7 +23,7 @@
 require "cgi"
 require "open-uri"
 
-module GoogleChart
+module GchartFormula
   class Formula
     SHORT_EXPR = {
       "Delta" => "De",

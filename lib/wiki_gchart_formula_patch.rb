@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'gchart_formula/gchart_formula'
+require_relative 'gchart_formula/gchart_formula'
 
 module WikiGchartFormulaPatch
   FORMULA_PATTERN = /(!)?(\{\{latex\((.*?)\)\}\})/
@@ -72,7 +72,7 @@ module WikiGchartFormulaPatch
           next match_data[2] if (match_data[1])
 
           data = parse_wiki_gchart_pattern(match_data[3])
-          formula_url = GoogleChart.formula(data[:formula], data[:option] || {}).to_url
+          formula_url = GchartFormula.formula(data[:formula], data[:option] || {}).to_url
           next tag("img", :src => formula_url, :alt => data[:formula],
                    :title => data[:formula], :class => IMAGE_TAG_CLASS_NAME)
         end
