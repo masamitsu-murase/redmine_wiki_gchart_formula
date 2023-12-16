@@ -24,7 +24,7 @@ require "cgi"
 require "open-uri"
 
 module GchartFormula
-  class Formula
+  class GchartFormula
     SHORT_EXPR = {
       "Delta" => "De",
       "Diamond" => "Di",
@@ -317,7 +317,7 @@ module GchartFormula
   end
 
   def self.formula(*args)
-    return Formula.new(*args)
+    return GchartFormula.new(*args)
   end
 end
 
