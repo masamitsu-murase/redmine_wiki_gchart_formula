@@ -18,15 +18,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-if Rails::VERSION::MAJOR >= 5 and Rails::VERSION::MINOR >= 1
-  reloader = ActiveSupport::Reloader
-else
-  reloader = ActionDispatch::Callbacks
-end
-reloader.to_prepare do
-  require_dependency 'application_helper'
+
+if Rails::VERSION::MAJOR >= 6
   unless ApplicationHelper.included_modules.include?(WikiGchartFormulaPatch)
     ApplicationHelper.send(:include, WikiGchartFormulaPatch)
+  end
+else
+  if Rails::VERSION::MAJOR >= 5 and Rails::VERSION::MINOR >= 1
+    reloader = ActiveSupport::Reloader
+  else
+    reloader = ActionDispatch::Callbacks
+  end
+  reloader.to_prepare do
+    require_dependency 'application_helper'
+    unless ApplicationHelper.included_modules.include?(WikiGchartFormulaPatch)
+      ApplicationHelper.send(:include, WikiGchartFormulaPatch)
+    end
   end
 end
 
